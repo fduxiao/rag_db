@@ -12,7 +12,7 @@ def auto_async(func):
     return wrapped
 
 
-class ChromaDB:
+class ChromaConn:
     def __init__(self, url="file://./db/chroma", is_async=False):
         url = urlparse(url)
         self.url = url

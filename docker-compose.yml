@@ -2,12 +2,14 @@ services:
 
   mongo:
     restart: always
-    image: mongodb/mongodb-atlas-local
+    image: mongo
     ports:
       - "127.0.0.1:27017:27017"
     volumes:
       - ./db/mongo/data:/data/db
       - ./db/mongo/config:/data/configdb
+    mem_limit: 256m
+    command: mongod --wiredTigerCacheSizeGB 0.3
 #    environment:
 #      MONGO_INITDB_ROOT_USERNAME: mongo
 #      MONGO_INITDB_ROOT_PASSWORD: mongo
@@ -23,3 +25,10 @@ services:
 #      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
       ME_CONFIG_MONGODB_URL: mongodb://mongo:27017/?directConnection=true
       ME_CONFIG_BASICAUTH: false
+
+  chromadb:
+    image: chromadb/chroma
+    volumes:
+      - ./db/chromadb:/data
+    ports:
+      - "8000:8000"
