@@ -1,4 +1,5 @@
 import datetime
+import bson
 
 
 class Field:
@@ -28,6 +29,12 @@ class Field:
 
     def __set__(self, instance, value):
         instance.data[self.name] = self.to_data(value)
+
+
+class IDField(Field):
+    @classmethod
+    def default(cls):
+        return str(bson.ObjectId())
 
 
 class DatetimeField(Field):

@@ -1,4 +1,5 @@
 from pymongo import AsyncMongoClient
+from pymongo.asynchronous.database import AsyncDatabase
 from pymongo.asynchronous.collection import AsyncCollection
 from pymongo.operations import SearchIndexModel
 
@@ -8,14 +9,21 @@ class MongoConn:
         self.client = AsyncMongoClient(url)
 
     async def connect(self):
-        self.client = await self.client.aconnect()
+        await self.client.aconnect()
 
-    async def get_collection(self, database: str, collection: str):
-        database = self.client.get_database(database)
-        return database.get_collection(collection)
+    async def get_database(self, name: str = None):
+        return MongoDB(self.client.get_database(name))
 
     async def close(self):
-        await self.client.close()
+        await self.client.aclose()
+
+
+class MongoDB:
+    def __init__(self, database: AsyncDatabase):
+        self.database = database
+
+    async def get_collection(self, name: str):
+        return MongoColl(self.database.get_collection(name))
 
 
 class MongoColl:
@@ -23,7 +31,8 @@ class MongoColl:
         self.collection = collection
 
     async def insert(self, data):
-        return await self.collection.insert_one(data)
+        obj = await self.collection.insert_one(data)
+        return obj.inserted_id
 
     async def update(self, query, update, upsert=False):
         return await self.collection.update_one(query, update, upsert=upsert)

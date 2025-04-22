@@ -9,13 +9,13 @@ from .types import RagDBApp
 
 def create_app() -> Sanic:
     config = Config()
-    ctx = Context()
+    ctx = Context(config)
 
     app: RagDBApp = Sanic(config.app_name, config=config, ctx=ctx, request_class=Request)
 
     @app.listener("before_server_start")
-    async def setup_db(_app: RagDBApp):
-        await _app.ctx.setup_db()
+    async def setup_db(_app: RagDBApp, loop):
+        await _app.ctx.setup_db(loop)
 
     @app.listener("after_server_stop")
     async def setup_db(_app: RagDBApp):
